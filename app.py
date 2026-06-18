@@ -12,11 +12,16 @@ YELLOW_FILL = PatternFill(start_color="FFFFFF00", end_color="FFFFFF00", fill_typ
 
 @app.route('/rate')
 def get_rate():
+    import ssl
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
     url = 'https://open.er-api.com/v6/latest/USD'
-    with urllib.request.urlopen(url) as response:
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req, context=ctx, timeout=10) as response:
         data = json.loads(response.read())
     rate = data['rates']['TJS']
-    return jsonify({'rate': rate})
+    return jsonify({'rate': rate, 'date': data['time_last_update_utc']})
 
 @app.route('/colorize', methods=['POST'])
 def colorize():
