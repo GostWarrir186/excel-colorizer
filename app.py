@@ -12,7 +12,7 @@ YELLOW_FILL = PatternFill(start_color="FFFFFF00", end_color="FFFFFF00", fill_typ
 
 @app.route('/rate')
 def get_rate():
-    url = 'https://api.exchangerate-api.com/v4/latest/USD'
+    url = 'https://open.er-api.com/v6/latest/USD'
     with urllib.request.urlopen(url) as response:
         data = json.loads(response.read())
     rate = data['rates']['TJS']
