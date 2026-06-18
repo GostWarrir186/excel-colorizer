@@ -10,6 +10,8 @@ app = Flask(__name__)
 RED_FILL = PatternFill(start_color="FFFF0000", end_color="FFFF0000", fill_type="solid")
 YELLOW_FILL = PatternFill(start_color="FFFFFF00", end_color="FFFFFF00", fill_type="solid")
 
+resume_url_store = {}
+
 def get_usd_tjs_rate():
     url = 'https://open.er-api.com/v6/latest/USD'
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -22,9 +24,21 @@ def colorize():
     rate = get_usd_tjs_rate()
     limit = 200 * rate
 
+
+@app.route('/save-url', methods=['POST'])
+def save_url():
+    data = request.json
+    resume_url_store['url'] = data['url']
+    return jsonify({'ok': True})
+
+@app.route('/get-url')
+def get_url():
+    return jsonify({'url': resume_url_store.get('url', '')})
+
     file = request.files['file']
     wb = openpyxl.load_workbook(file)
     ws = wb.active
+    
 
     header_row = [cell.value for cell in ws[1]]
     color_col = None
